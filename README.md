@@ -72,7 +72,7 @@ Can’t we solve our problem in Scala, then? Yes, we will see that we can indeed
 First, we must define the tree data type:
 
 ```
-module Trees where 
+module Trees where
   data Tree (A : Set) : Set where
     leaf : A -> Tree A
     node : Tree A -> A -> Tree A -> Tree A
@@ -95,7 +95,7 @@ Let’s implement now the promised `get` and `update` functions, which will be p
 
 ```
 module Leafs where
-  
+
   open import Data.Vec
   open Trees
 
@@ -129,7 +129,7 @@ The implementation of the `update` function is similarly beautiful:
 update : {A : Set} -> (s : Tree A) -> Vec A (#leafs s) -> Tree A
   update (leaf _) (x ∷ []) = leaf x
   update (node l x r) v = node updatedL x updatedR
-    where 
+    where
       updatedL = update l (take (#leafs l) v)
       updatedR = update r (drop (#leafs l) v)
 ```
@@ -144,7 +144,7 @@ Let’s exercise these definitions in the following module:
     open import Data.Vec
     open Trees
     open LeafsAdHoc
-  
+
     t1 : Tree ℕ
     t1 = node (node (leaf 1) 2 (leaf 3)) 4 (leaf 5)
 
@@ -154,7 +154,7 @@ Let’s exercise these definitions in the following module:
     t2 : Tree ℕ
     t2 = Leafs.update t1 (5 ∷ 3 ∷ 1 ∷ [])
 
-    // CHECK 
+    // CHECK
 
     open import Relation.Binary.PropositionalEquality
 
@@ -164,7 +164,7 @@ Let’s exercise these definitions in the following module:
     eq2 : t2 ≡ (node (node (leaf 5) 2 (leaf 3)) 4 (leaf 1))
     eq2 = refl
 
-    -- WON'T COMPILE 
+    -- WON'T COMPILE
 
     {- Error: 3 != 4 of type ℕ
        when checking that the expression get t1 has type Vec ℕ 4
@@ -349,7 +349,7 @@ The downside of the Scala implementation is, evidently, its verbosity and the am
 
 <h2>Conclusion</h2>
 
-We may have mimicked the Agda implementation style in Scala. In the `shapeless` framework, for instance, we have available the `Sized` type to represent lists of a fixed size, and we may even use <a href="https://docs.scala-lang.org/sips/42.type.html">literal types</a> to overcome the limitation of using values in type declarations. Alterantively, we proposed an implementation fully based on shape-aware algebraic data types. This version is in our opinion more idiomatic to solve our particular problem in Scala. It also allows us to grasp the idiosyncrasy of Scala with respect to competing approaches like the one proposed in Agda. In this regard, we found the notion of <a href="http://www.cs.nott.ac.uk/~psztxa/publ/fossacs03.pdf">*shape*</a> to be extremely useful.
+We may have mimicked the Agda implementation style in Scala. In the `shapeless` framework, for instance, we have available the `Sized` type to represent lists of a fixed size, and we may even use <a href="https://docs.scala-lang.org/sips/42.type.html">literal types</a> to overcome the limitation of using values in type declarations. Alternatively, we proposed an implementation fully based on shape-aware algebraic data types. This version is in our opinion more idiomatic to solve our particular problem in Scala. It also allows us to grasp the idiosyncrasy of Scala with respect to competing approaches like the one proposed in Agda. In this regard, we found the notion of <a href="http://www.cs.nott.ac.uk/~psztxa/publ/fossacs03.pdf">*shape*</a> to be extremely useful.
 
 
 In next posts we will likely go on exploring Agda in one of its most characteristic applications: certified programming. For instance, we may generalise the example shown in this post and talk about *traversals* (a kind of optic, like lenses) and its laws. One of these laws, applied to our example, tells us that if you update the leafs of the tree with its current leaf values, you will obtain the same tree. Using Agda, we can state that law and *prove* that our implementation satisfies it. No need to enumerate test cases, or empirically test the given property (e.g., as in Scalacheck). Till the next post!
